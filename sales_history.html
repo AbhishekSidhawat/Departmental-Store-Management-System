@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📜 Sales History</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 25px;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            width: 250px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        form button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 90%;
+            margin: 0 auto 30px auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-btn {
+            padding: 10px 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            table {
+                font-size: 14px;
+            }
+
+            input[type="text"] {
+                width: 90%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📜 Sales History</h2>
+
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('sales_history') }}">
+        <input type="text" name="search_query" placeholder="Search by customer name or phone" value="{{ request.args.get('search_query', '') }}">
+        <button type="submit">🔍 Search</button>
+    </form>
+
+    <!-- Sales Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>🆔 Sale ID</th>
+                <th>👤 Customer</th>
+                <th>📞 Phone</th>
+                <th>📦 Product</th>
+                <th>🔢 Quantity</th>
+                <th>💰 Total Price</th>
+                <th>📅 Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if sales %}
+                {% for sale, customer, product in sales %}
+                <tr>
+                    <td>{{ sale.id }}</td>
+                    <td>{{ customer.name }}</td>
+                    <td>{{ customer.phone }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ sale.quantity_sold }}</td>
+                    <td>Rs. {{ sale.total_price }}</td>
+                    <td>{{ sale.date_sold.strftime('%d-%m-%Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7">No sales found.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Back Button -->
+    <div class="btn-container">
+        <a href="{{ url_for('dashboard') }}">
+            <button class="back-btn">⬅️ Back to Dashboard</button>
+        </a>
+    </div>
+
+</body>
+</html>

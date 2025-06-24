@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>📝 Register</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #007bff, #00d4ff);
+        }
+
+        .register-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            width: 320px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        label {
+            align-self: flex-start;
+            font-weight: bold;
+            margin: 8px 0 5px;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        p {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 400px) {
+            .register-container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+
+        /* Flash message styles */
+        .flash-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .flash-message.success { background-color: #28a745; }
+        .flash-message.danger { background-color: #dc3545; }
+        .flash-message.info { background-color: #17a2b8; }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <h2>📝 Register</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <label for="username">Username:</label>
+            <input type="text" name="username" placeholder="Enter your username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" placeholder="Enter your password" required>
+
+            <label for="role">Role:</label>
+            <select name="role" required>
+                <option value="" disabled selected>Select a role</option>
+                <option value="manager">Manager</option>
+                <option value="cashier">Cashier</option>
+            </select>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+
+    <script>
+        setTimeout(function () {
+            let flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(msg => msg.style.display = 'none');
+        }, 5000);
+    </script>
+
+</body>
+</html>

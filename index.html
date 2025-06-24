@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+
+    <style>
+        /* Reset and base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background: #f4f4f4;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 250px;
+            background: #007bff;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+        }
+
+        .menu {
+            list-style: none;
+            width: 100%;
+        }
+
+        .menu li {
+            width: 100%;
+        }
+
+        .menu a {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .menu a:hover {
+            background: #0056b3;
+        }
+
+        .logout {
+            margin-top: auto;
+            background: #dc3545;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .logout:hover {
+            background: #b02a37;
+        }
+
+        /* Main content area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .sidebar {
+                width: 200px;
+                padding: 15px;
+            }
+
+            .menu a {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>📊 Dashboard</h2>
+        <ul class="menu">
+            {% if role == 'manager' %}
+                <li><a href="{{ url_for('view_products') }}">📦 View Products</a></li>
+                <li><a href="{{ url_for('add_product') }}">➕ Add Product</a></li>
+                <li><a href="{{ url_for('record_sale') }}">💰 Sales</a></li>
+                <li><a href="{{ url_for('sales_history') }}">📜 Sales History</a></li>
+                <li><a href="{{ url_for('inventory') }}">📋 Inventory</a></li>
+                <li><a href="{{ url_for('customers') }}">👥 Customers</a></li>
+                <li><a href="{{ url_for('sales_inventory_analysis') }}">📈 Sales & Inventory Report</a></li>
+            {% elif role == 'cashier' %}
+                <li><a href="{{ url_for('record_sale') }}">💰 Sales</a></li>
+                <li><a href="{{ url_for('inventory') }}">📋 Inventory</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h2>🏪 Welcome to the Departmental Store Management System</h2>
+        <p>📌 Select an option from the menu to continue.</p>
+    </div>
+
+</body>
+</html>

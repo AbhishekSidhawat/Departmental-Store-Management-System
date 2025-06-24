@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛒 Record Sale</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #f1f8ff);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+        }
+
+        h2 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .remove-btn:hover {
+            background: #b02a37;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .total-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d9534f;
+            margin-top: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>🛒 Record a Sale</h2>
+
+    <form method="POST" action="{{ url_for('record_sale') }}" onsubmit="return validateForm()">
+        <label>👤 Customer Name:</label>
+        <input type="text" name="customer_name" placeholder="Enter customer name" required>
+
+        <label>📞 Customer Phone:</label>
+        <input type="text" name="customer_phone" placeholder="Enter phone number" required>
+
+        <table>
+            <thead>
+            <tr>
+                <th>🛍️ Product</th>
+                <th>💰 Price</th>
+                <th>🔢 Quantity</th>
+                <th>❌ Action</th>
+            </tr>
+            </thead>
+            <tbody id="product-list">
+            <tr class="product-row">
+                <td>
+                    <select name="product_id[]" required onchange="updatePrice(this)">
+                        <option disabled selected value="">-- Select Product --</option>
+                        {% for product in products %}
+                            <option value="{{ product.id }}" data-price="{{ product.price }}">
+                                {{ product.name }} - Stock: {{ product.stock }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="price">0</td>
+                <td>
+                    <input type="number" name="quantity_sold[]" min="1" required oninput="calculateTotal()">
+                </td>
+                <td>
+                    <button type="button" class="remove-btn" onclick="removeProduct(this)">🗑️ Remove</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button type="button" class="btn-primary" onclick="addProduct()">➕ Add Product</button>
+
+        <div class="total-amount">
+            Total Amount: Rs. <span id="grand-total">0</span>
+        </div>
+
+        <button type="submit" class="btn-primary">✅ Submit Sale</button>
+    </form>
+
+    <a href="{{ url_for('dashboard') }}" class="btn-secondary">⬅️ Back to Dashboard</a>
+</div>
+
+<script>
+    function updatePrice(select) {
+        let price = select.options[select.selectedIndex].dataset.price;
+        select.closest('tr').querySelector('.price').innerText = price;
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        document.querySelectorAll('.product-row').forEach(row => {
+            let price = parseFloat(row.querySelector('.price').innerText) || 0;
+            let quantity = parseInt(row.querySelector("input[name='quantity_sold[]']").value) || 0;
+            total += price * quantity;
+        });
+        document.getElementById("grand-total").innerText = total.toFixed(2);
+    }
+
+    function addProduct() {
+        let productList = document.getElementById("product-list");
+        let newRow = document.querySelector(".product-row").cloneNode(true);
+
+        newRow.querySelector("input").value = "";
+        newRow.querySelector("select").selectedIndex = 0;
+        newRow.querySelector(".price").innerText = "0";
+
+        newRow.querySelector(".remove-btn").setAttribute("onclick", "removeProduct(this)");
+        newRow.querySelector("select").setAttribute("onchange", "updatePrice(this)");
+        newRow.querySelector("input").setAttribute("oninput", "calculateTotal()");
+
+        productList.appendChild(newRow);
+    }
+
+    function removeProduct(button) {
+        let row = button.closest('tr');
+        let productList = document.getElementById("product-list");
+
+        if (productList.children.length > 1) {
+            row.remove();
+            calculateTotal();
+        } else {
+            alert("At least one product must be selected!");
+        }
+    }
+
+    function validateForm() {
+        const productSelects = document.querySelectorAll("select[name='product_id[]']");
+        const selectedValues = [];
+
+        for (let select of productSelects) {
+            if (selectedValues.includes(select.value)) {
+                alert("You can't select the same product more than once.");
+                return false;
+            }
+            selectedValues.push(select.value);
+        }
+        return true;
+    }
+</script>
+</body>
+</html>
